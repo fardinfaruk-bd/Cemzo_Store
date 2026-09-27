@@ -1,19 +1,19 @@
 import { createContext, useEffect, useState } from "react";
 
-export const ProductContext = createContext();
+export const ProductContext = createContext(null);
 
 const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortOrder, setSortOrder] = useState("default");
   const [currentPage, setCurrentPage] = useState(1);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const productsPerPage = 12;
 
-  
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -41,10 +41,12 @@ const ProductProvider = ({ children }) => {
     fetchProducts();
   }, []);
 
+
   const categories = [
     "all",
     ...new Set(products.map((product) => product.category)),
   ];
+
 
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.title
@@ -58,17 +60,30 @@ const ProductProvider = ({ children }) => {
     return matchesSearch && matchesCategory;
   });
 
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortOrder === "low-to-high") {
+      return a.price - b.price;
+    }
+
+    if (sortOrder === "high-to-low") {
+      return b.price - a.price;
+    }
+
+    return 0;
+  });
+
+
   const totalPages = Math.ceil(
-    filteredProducts.length / productsPerPage
+    sortedProducts.length / productsPerPage
   );
 
   const startIndex = (currentPage - 1) * productsPerPage;
 
-  const paginatedProducts = filteredProducts.slice(
+  const paginatedProducts = sortedProducts.slice(
     startIndex,
     startIndex + productsPerPage
   );
-
 
   const handleSearchChange = (value) => {
     setSearchTerm(value);
@@ -80,24 +95,28 @@ const ProductProvider = ({ children }) => {
     setCurrentPage(1);
   };
 
+  const handleSortChange = (value) => {
+    setSortOrder(value);
+    setCurrentPage(1);
+  };
+
+
   const contextValue = {
     products,
     filteredProducts,
+    sortedProducts,
     paginatedProducts,
-
     categories,
-
-    searchTerm,
-    setSearchTerm: handleSearchChange,
-
     selectedCategory,
     setSelectedCategory: handleCategoryChange,
+    searchTerm,
+    setSearchTerm: handleSearchChange,
+    sortOrder,
+    setSortOrder: handleSortChange,
 
     currentPage,
     setCurrentPage,
-
     totalPages,
-
     loading,
     error,
   };
