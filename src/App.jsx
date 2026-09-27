@@ -1,4 +1,4 @@
-import Layout from "./components/Layout";
+import Layout from "./components/layout";
 import CategoryFilter from "./components/CategoryFilter";
 import SortFilter from "./components/SortFilter";
 import ProductGrid from "./components/ProductGrid";
