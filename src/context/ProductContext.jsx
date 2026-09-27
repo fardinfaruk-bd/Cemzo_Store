@@ -13,7 +13,7 @@ const ProductProvider = ({ children }) => {
 
   const productsPerPage = 12;
 
-  // Fetch products
+  
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -41,13 +41,11 @@ const ProductProvider = ({ children }) => {
     fetchProducts();
   }, []);
 
-  // Categories
   const categories = [
     "all",
     ...new Set(products.map((product) => product.category)),
   ];
 
-  // Filter products
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.title
       .toLowerCase()
@@ -60,7 +58,6 @@ const ProductProvider = ({ children }) => {
     return matchesSearch && matchesCategory;
   });
 
-  // Pagination
   const totalPages = Math.ceil(
     filteredProducts.length / productsPerPage
   );
@@ -72,13 +69,12 @@ const ProductProvider = ({ children }) => {
     startIndex + productsPerPage
   );
 
-  // Search
+
   const handleSearchChange = (value) => {
     setSearchTerm(value);
     setCurrentPage(1);
   };
 
-  // Category
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
     setCurrentPage(1);
